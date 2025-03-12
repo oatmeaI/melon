@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "melon"
+version = "0.1.0"
+description = ""
+authors = ["Keenan <keenan@oatmeal.monster>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.0.3"
+requests = "^2.32.3"
+lxml = "^5.3.0"
+plexapi = "^4.16.1"
+waitress = "^3.0.2"
+platformdirs = "^4.3.6"
+
+[tool.poetry.scripts]
+start = "melon.main:start"
+start_dev = "melon.main:start_dev"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
