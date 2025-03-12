@@ -48,26 +48,33 @@ class Plugin:
         }
 
     def startStation(self, path, request, response):
-        if constants.URI_KEY in request.args:
-            uri = request.args[constants.URI_KEY]
-            a = uri.find("library/metadata/") + 17
-            b = uri.find("/station/")
-            ekey = int(uri[a:b])
-            firstTrack = self.server().library.fetchItem(ekey)
-            tracks = [firstTrack]
-            server = self.server()
-            queue = PlayQueue.create(server, tracks)
+        # TODO: instead of try/except, detect the case correctly
+        try:
+            if constants.URI_KEY in request.args:
+                uri = request.args[constants.URI_KEY]
+                a = uri.find("library/metadata/") + 17
+                b = uri.find("/station/")
+                if a < 0 or b < 0:
+                    return response
+                ekey = int(uri[a:b])
+                firstTrack = self.server().library.fetchItem(ekey)
+                tracks = [firstTrack]
+                server = self.server()
+                queue = PlayQueue.create(server, tracks)
 
-            prevTrack = firstTrack
-            while len(queue.items) < 3:
-                prevTrack = self.getNextTrack(server, prevTrack, queue.items)
-                queue.addItem(prevTrack)
+                prevTrack = firstTrack
+                while len(queue.items) < 3:
+                    prevTrack = self.getNextTrack(server, prevTrack, queue.items)
+                    queue.addItem(prevTrack)
 
-            deviceId = request.args[constants.DEVICE_NAME_KEY]
-            self.setQueueIdForDevice(deviceId, queue.playQueueID)
-            return requestToServer(
-                f"playQueues/{str(queue.playQueueID)}", request.headers
-            )
+                deviceId = request.args[constants.DEVICE_NAME_KEY]
+                self.setQueueIdForDevice(deviceId, queue.playQueueID)
+                return requestToServer(
+                    f"playQueues/{str(queue.playQueueID)}", request.headers
+                )
+        except Exception as e:
+            print(e)
+            return response
         return response
 
     def getNextTrack(self, server, track, queue):

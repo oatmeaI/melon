@@ -40,8 +40,11 @@ def catch_all(path):
     response = forwardRequest(request, path)
     interceptedResponse = response
 
+    print(handlers)
+
     for handler in handlers:
-        interceptedResponse = handler(path, request, response)
+        print(handler)
+        interceptedResponse = handler(path, request, interceptedResponse)
 
     return buildResponse(interceptedResponse)
 
