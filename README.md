@@ -81,6 +81,7 @@ station_name = "Cool Guys Radio"
 - [ ] Installing un-bundled plugins
 - [ ] An actual build process & binary distribution
 - [ ] Better log messages / log to a file
+- [ ] Better & prettier documentation
 
 ## What's with the name?
 - It's a **man in the middle** proxy.
