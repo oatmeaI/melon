@@ -87,4 +87,5 @@ station_name = "Cool Guys Radio"
 - Plex is an app for watching TV; **Malcolm In The Middle** is a famous TV show.
 - **Melon** is my dog's name (and she likes to be in the middle of the bed)
 
-![IMG_5578](https://github.com/user-attachments/assets/d83e76ad-f239-4128-a6d1-3fe6e10c2db8)
+![IMG_5578](https://github.com/user-attachments/assets/4e7d842e-55a8-4bbc-a0a5-e0278b5de77b)
+
