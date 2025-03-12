@@ -47,7 +47,7 @@ Extensions to Plex functionality served by Melon are handled by plugins. Current
 ### ExploreRadio
 Explore Radio is the reason I created Melon. The Explore Radio Plugin adds a new Station to your Music library which tries to play a pretty even mix of songs you've rated highly and songs you've never heard before, while maintaining a vibe (using Plex's sonic similarity feature).
 
-### Options
+#### Options
 `ExploreRadio` offers one option - `station_name` - which determines what the Explore station will be named in the UI.
 
 ## Config
