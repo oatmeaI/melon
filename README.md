@@ -1,4 +1,4 @@
-# Melon In The Middle (for Plex)
+# Melon In The Middle (for Plex) 🐶
 Melon In The Middle (`melon` for short) is a tool that allows you to extend the functionality of your Plex server in almost any way imaginable.
 
 ## How?
