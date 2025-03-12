@@ -67,6 +67,7 @@ The available options and their defaults are:
 Some plugins offer their own config options. These can be specified under `[plugin_config.{Plugin Name}]` in the `config.toml`
 
 ### Example config.toml:
+(This is the config that I use)
 ```toml
 enabled_plugins = ["ExploreRadio"]
 
