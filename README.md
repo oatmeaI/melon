@@ -45,7 +45,7 @@ That station is created by the Explore Station plugin...
 Extensions to Plex functionality served by Melon are handled by plugins. Currently there is only one plugin - Explore Radio - and all plugins must be bundled with Melon. In the future, there will be more plugins which over more functionlality, and a way to install plugins not bundled with Melon (see the Roadmap below).
 
 ### ExploreRadio
-Explore Radio is the reason I created Melon. The Explore Radio Plugin adds a new Station to your Music library which tries to play a pretty even mix of songs you've rated highly and songs you've never heard before, while maintaining a vibe (using Plex's sonic similarity feature).
+`ExploreRadio` is the reason I created Melon. The Explore Radio Plugin adds a new Station to your Music library which tries to play a pretty even mix of songs you've rated highly and songs you've never heard before, while maintaining a vibe (using Plex's sonic similarity feature).
 
 #### Options
 `ExploreRadio` offers one option - `station_name` - which determines what the Explore station will be named in the UI.
