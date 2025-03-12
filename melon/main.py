@@ -32,7 +32,6 @@ def catch_all(path):
     for plugin in plugins:
         if path in plugin.paths(request):
             handlers.append(plugin.paths(request)[path])
-            break
 
     if len(handlers) == 0:
         bail()
