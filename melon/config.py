@@ -8,7 +8,7 @@ DEFAULTS = {
     "serverPort": "32400",
     "musicSection": "Music",
     "debug": False,
-    "enabled_plugins": [],
+    "enabled_plugins": ["ExploreRadio", "BetterTrackRadio"],
     "port": 5200,
     "plugin_config": {},
 }

@@ -1,18 +1,13 @@
 import random
-import json
-import copy
 
-from plexapi.server import PlayQueue, PlexServer
-from melon import constants
 from melon.config import Config
+from melon import constants
 from melon.store import store
+from plexapi.server import PlexServer, PlayQueue
 from melon.util import bail, forwardRequest, requestToServer
 
-
-PLUGIN_NAME = "ExploreRadio"
-HIJACK = "hijack"
-STATION_KEY = "explore"
-DEFAULT_CONFIG = {"station_name": "Explore Radio"}
+DEFAULT_CONFIG = {}
+PLUGIN_NAME = "BetterTrackRadio"
 
 
 class Plugin:
@@ -24,6 +19,13 @@ class Plugin:
     def __init__(self):
         _config = Config.getPluginSettins(PLUGIN_NAME)
         self.config = _config if _config else DEFAULT_CONFIG
+
+    def server(self):
+        if self._server is None:
+            self._server = PlexServer(
+                f"{Config.serverAddress}:{Config.serverPort}", store.token
+            )
+        return self._server
 
     def setQueueIdForDevice(self, device, queueId):
         self.queues[device] = queueId
@@ -38,48 +40,20 @@ class Plugin:
             return self.queues[deviceId]
         return ""
 
-    def server(self):
-        if self._server is None:
-            self._server = PlexServer(
-                f"{Config.serverAddress}:{Config.serverPort}", store.token
-            )
-        return self._server
-
     def paths(self, request):
         queueId = self.getQueueIdForRequest(request)
         return {
-            "hubs/sections/1": self.addExploreStation,
             "playQueues": self.startStation,
-            f"playQueues/{str(queueId)}": self.playQueues,
+            f"playQueues/{str(queueId)}": self.handleQueue,
         }
 
-    def addExploreStation(self, _, __, response):
-        print("Adding station...")
-        return self.addStation(self.config["station_name"], STATION_KEY, response)
-
-    def playQueues(self, path, request, response):
-        queueId = str(self.getQueueIdForRequest(request))
-        if queueId in path and not self.inflight:
-            print("checking if we should add to queue")
-            self.inflight = True
-            self.handleQueue(request)
-            self.inflight = False
-            # refresh the response since we changed the queue
-            return forwardRequest(request, path)
-
-        return response
-
     def startStation(self, path, request, response):
-        if (
-            constants.URI_KEY in request.args
-            and STATION_KEY in request.args[constants.URI_KEY]
-            and HIJACK in request.args[constants.URI_KEY]
-        ):
-            print("Starting station...")
-            section = self.server().library.section(Config.musicSection)
-
-            # TODO: pick this in a smarter way
-            firstTrack = section.searchTracks(maxresults=1, sort="random")[0]
+        if constants.URI_KEY in request.args:
+            uri = request.args[constants.URI_KEY]
+            a = uri.find("library/metadata/") + 17
+            b = uri.find("/station/")
+            ekey = int(uri[a:b])
+            firstTrack = self.server().library.fetchItem(ekey)
             tracks = [firstTrack]
             server = self.server()
             queue = PlayQueue.create(server, tracks)
@@ -95,39 +69,6 @@ class Plugin:
                 f"playQueues/{str(queue.playQueueID)}", request.headers
             )
         return response
-
-    def handleQueue(self, request):
-        server = self.server()
-        queueId = self.getQueueIdForRequest(request)
-        queue = PlayQueue.get(server, queueId)
-        queue.refresh()
-        pos = len(queue.items) - queue.playQueueSelectedItemOffset
-        print("pos", pos)
-        while pos < 15:
-            print("pos", pos)
-            track = queue.items[-1]
-            nextTrack = self.getNextTrack(server, track, queue.items)
-            queue.addItem(nextTrack)
-            pos = len(queue.items) - queue.playQueueSelectedItemOffset
-
-    # TODO: from here down is a real mess
-    def addStation(self, name, key, response):
-        try:
-            j = json.loads(response.content)
-            for hub in j["MediaContainer"]["Hub"]:
-                if hub["title"] == "Stations":
-                    hub["size"] = 5
-                    first = copy.deepcopy(hub["Metadata"][0])
-                    first["title"] = name
-                    first["guid"] = "hijack://station/" + key
-                    first["key"] = "/hijack/stations/" + key
-
-                    hub["Metadata"].insert(0, first)
-
-            response._content = json.dumps(j)
-            return response
-        except Exception as e:
-            bail()
 
     def getNextTrack(self, server, track, queue):
         tracks = track.sonicallySimilar(maxDistance=0.2)
@@ -179,3 +120,25 @@ class Plugin:
 
         print(type + ": ", filtered[0])
         return filtered[0]
+
+    def handleQueue(self, path, request, response):
+        queueId = str(self.getQueueIdForRequest(request))
+        if queueId in path and not self.inflight:
+            print("checking if we should add to queue")
+            self.inflight = True
+            server = self.server()
+            queueId = self.getQueueIdForRequest(request)
+            queue = PlayQueue.get(server, queueId)
+            queue.refresh()
+            pos = len(queue.items) - queue.playQueueSelectedItemOffset
+            print("pos", pos)
+            while pos < 15:
+                print("pos", pos)
+                track = queue.items[-1]
+                nextTrack = self.getNextTrack(server, track, queue.items)
+                queue.addItem(nextTrack)
+                pos = len(queue.items) - queue.playQueueSelectedItemOffset
+            self.inflight = False
+            # refresh the response since we changed the queue
+            return forwardRequest(request, path)
+        return response
