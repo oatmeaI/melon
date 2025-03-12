@@ -14,7 +14,7 @@ Setting up `melon` takes a little bit of work, because we need to trick Plex int
 
 At this point, you should be able to use Plex as normal, but all connections will be funneled through your reverse proxy.
 
-### 2. Set your reverse proxy to send traffic to Melon
+### 2. Tell your reverse proxy to send traffic to Melon instead of Plex
 1. Update your reverse proxy configuration to send all traffic to `localhost:5200` (the port that `melon` uses) instead of to your Plex server.
 2. Set your proxy to send traffic to Plex if `melon` returns an error.
 This part is a little weird, but not that complicated. My `Caddyfile` looks like this:
